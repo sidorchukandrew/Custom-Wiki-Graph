@@ -1,0 +1,30 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+.text-field {
+    -fx-text-box-border: transparent;
+    -fx-background-color: -fx-control-inner-background;
+    -fx-background-insets: 0;
+    -fx-padding: 1 3 1 3;
+}
+
+.text-field:focused {
+    -fx-focus-color: transparent;
+}
+
+.button {
+    -fx-background-color: red;
+}
+
+.button:hover{
+    -fx-background-color: crimson;
+}
+
+#chart-symbol {
+    -fx-background-radius: 20px ;
+    -fx-padding: 20px ;
+    -fx-stroke: red;
+}
+
+.default-color0.chart-series-line { -fx-stroke: black; } 
+
+.default-color0.chart-line-symbol { -fx-background-color: black, white; }
