@@ -12,6 +12,7 @@ import assignment3.model.Node;
 
 public class GraphUtilities {
 
+	// This is to populate the GUI
 	public static ArrayList<String> getAllWebsites(Node root) {
 		
 		ArrayList<String> websites = new ArrayList<String>();
@@ -57,7 +58,7 @@ public class GraphUtilities {
 	public static Stack dijkstra(Node src, String dst) {
 		
 		// Mark all nodes as unvisited
-		reinitialize(Main.getGraphRoot());
+		reset(Main.getGraphRoot());
 		
 		// Keeps track of unvisited nodes
 		PriorityQueue<Edge> unvisited = new PriorityQueue<Edge>();
@@ -109,7 +110,7 @@ public class GraphUtilities {
 		return path;
 	}
 	
-	public static void reinitialize(Node root) {
+	public static void reset(Node root) {
 		
 		long currentMarker = root.getMark() + 1;
 		ArrayDeque<Node> stack = new ArrayDeque<Node>();

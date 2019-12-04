@@ -15,6 +15,7 @@ public class Edge implements Serializable, Comparable<Edge> {
 	public Edge(Node src, Node dst, double weight) {
 		this.dst = dst;
 		this.weight = weight;
+		this.src = src;
 	}
 	
 	public Edge() {

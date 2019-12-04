@@ -22,7 +22,6 @@
 #chart-symbol {
     -fx-background-radius: 20px ;
     -fx-padding: 20px ;
-    -fx-stroke: red;
 }
 
 .default-color0.chart-series-line { -fx-stroke: black; } 

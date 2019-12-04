@@ -19,31 +19,24 @@ public class Node implements Serializable{
 	private long mark;
 	private Node parent;
 	private double distance;
+	private int ID;
+	private Graph graphContainingThisNode;
 	
-	public Node(String name, int n) {
-		mark = 0;
-		this.name = name;
-		edges = new HashSet<Edge>();
-		srcScraped = null;
-		distance = Double.MAX_VALUE;
-	}
-	
-	public Node(String name) {
+	public Node(String name, Graph g) {
 		
+		graphContainingThisNode = g;
 		mark = 0;
 		this.name = name;
 		edges = new HashSet<Edge>();
 		srcScraped = null;
 		
+		// Scrape the website and generate its hashtable for cosine similarities
 		try {
 			srcScraped = IOUtilities.scrapeWebsite(name);
-			
 			srcTable = Graph.constructHashtable(srcScraped.getWords(), name);
 			for(String word : srcScraped.getWords()) 
 				srcTable.addWord(word);
-			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -72,17 +65,27 @@ public class Node implements Serializable{
 		return null;
 	}
 
-	public void add(Node dst, double cosine) {
+	public void add(Node src, Node dst, double cosine) {
 		
 		if(getName().compareTo(dst.getName()) == 0)
 			return;
 		
-		Node possibleFind = find(Graph.getRoot(), dst);
+		Node possibleFind = find(graphContainingThisNode.getRoot(), dst);
 		
-		if(possibleFind != null) 
-			edges.add(new Edge(this, possibleFind, cosine));
-		else
-			edges.add(new Edge(this, dst, cosine));
+		Edge e;
+		
+		// If the node already exists in the graph, we will just update it's edges, otherwise, add it as a new node and set its parent
+		if(possibleFind != null) {
+			e = new Edge(src, possibleFind, cosine);
+			edges.add(e);
+		}
+		else {
+			e = new Edge(src, dst, cosine);
+			dst.setId(graphContainingThisNode.generateID());
+			edges.add(e);
+			graphContainingThisNode.MasterEdges.add(e);
+			dst.setParent(this);
+		}
 	}
 	
 	public void printName() {
@@ -132,5 +135,13 @@ public class Node implements Serializable{
 	public void setDistance(double distance) {
 		this.distance = distance;
 	}	
+	
+	public void setId(int ID) {
+		this.ID = ID;
+	}
+	
+	public int getID() {
+		return ID;
+	}
 	
 }
