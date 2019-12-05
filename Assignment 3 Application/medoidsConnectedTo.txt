@@ -1,0 +1,19 @@
+One of the medoid's links was : https://en.wikipedia.org/wiki/Canada and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/International_Standard_Book_Number and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/Digital_object_identifier and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/JSTOR and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/Wikidata and that site already exists in the graph.
+678
+One of the medoid's links was : https://en.wikipedia.org/wiki/France and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/Germany and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/Spain and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/International_Standard_Book_Number and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/OCLC and that site already exists in the graph.
+679
+680
+One of the medoid's links was : https://en.wikipedia.org/wiki/Spain and that site already exists in the graph.
+681
+One of the medoid's links was : https://en.wikipedia.org/wiki/Wayback_Machine and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/International_Standard_Book_Number and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/Digital_object_identifier and that site already exists in the graph.
+One of the medoid's links was : https://en.wikipedia.org/wiki/International_Standard_Serial_Number and that site already exists in the graph.

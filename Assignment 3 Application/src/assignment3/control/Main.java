@@ -3,6 +3,7 @@ package assignment3.control;
 import java.io.IOException;
 import java.util.PriorityQueue;
 
+import assignment3.model.Graph;
 import assignment3.model.Node;
 import assignment3.utilities.IOUtilities;
 import assignment3.view.WebPageDisplayerController;
@@ -18,7 +19,7 @@ public class Main extends Application {
 
 	private BorderPane root;
 	private static Stage stage;
-	private static Node graphRoot;
+	private static Graph graph;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -66,35 +67,14 @@ public class Main extends Application {
 	public void initializeGraph() {
 
 		try {
-			graphRoot = IOUtilities.readGraphFromFile("C:\\Users\\Andrew Sidorchuk\\CSC365 Workspace\\Assignment 3 Loader\\serialized.txt");
+			graph = IOUtilities.readActualGraph("C:\\Users\\Andrew Sidorchuk\\CSC365 Workspace\\Assignment 3 Loader\\serializedTEMP.txt");
 		} catch (ClassNotFoundException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public static Node getGraphRoot() {
-		return graphRoot;
-	}
-	
-	public static Node createTestGraph() {
-		Node a = new Node("A", 1);
-		Node b = new Node("B", 1);
-		Node c = new Node("C", 1);
-		a.add(b, 2.0);
-		a.add(c, 3.0);
-		
-		Node d = new Node("D", 1);
-		Node e = new Node("E", 1);
-		b.add(d, 4.0);
-		b.add(a, 60.0);
-		
-		d.add(e, 5.0);
-		
-		Node f = new Node("F", 1);
-		c.add(f, 2.0);
-		e.add(f, 20.0);
-		
-		return a;
+	public static Graph getGraph() {
+		return graph;
 	}
 }

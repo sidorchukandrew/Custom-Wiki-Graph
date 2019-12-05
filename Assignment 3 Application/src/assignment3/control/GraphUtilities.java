@@ -4,53 +4,21 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.Stack;
 
 import assignment3.model.Edge;
-import assignment3.model.Graph;
 import assignment3.model.Node;
 
 public class GraphUtilities {
 
 	// This is to populate the GUI
-	public static ArrayList<String> getAllWebsites(Node root) {
+	public static ArrayList<String> getAllWebsites(Set<Node> MasterNodes) {
 		
 		ArrayList<String> websites = new ArrayList<String>();
-		Hashtable<Integer, String> allWebsites = new Hashtable<Integer, String>();
-		
-		websites = visitEach(root, websites);
-		websites.add(root.getName());
-		
-		for(String website : websites)
-			allWebsites.put(website.hashCode(), website);
-		
-		websites = new ArrayList<String>();
-		
-		for(String website : allWebsites.values())
-			websites.add(website);
-		
-		return websites;
-	}
-	
-	private static ArrayList<String> visitEach(Node root, ArrayList<String> websites) {
-		
-		long currentMarker = root.getMark() + 1;
-		ArrayDeque<Node> stack = new ArrayDeque<Node>();
-		stack.addFirst(root);
-		
-		while(!stack.isEmpty()) {
-			
-			Node beingChecked = stack.removeFirst();
-			
-			if(beingChecked.getMark() == currentMarker) continue;
-			else {
-				websites.add(beingChecked.getName());
-				for(Edge e : beingChecked.getEdges()) {
-					beingChecked.setMark(currentMarker);
-					stack.addFirst(e.getDst());
-				}
-			}
-		}
+
+		for(Node n : MasterNodes)
+			websites.add(n.getName());
 		
 		return websites;
 	}
@@ -58,7 +26,7 @@ public class GraphUtilities {
 	public static Stack dijkstra(Node src, String dst) {
 		
 		// Mark all nodes as unvisited
-		reset(Main.getGraphRoot());
+		reset(Main.getGraph().getMasterNodes());
 		
 		// Keeps track of unvisited nodes
 		PriorityQueue<Edge> unvisited = new PriorityQueue<Edge>();
@@ -110,47 +78,54 @@ public class GraphUtilities {
 		return path;
 	}
 	
-	public static void reset(Node root) {
+	public static void reset(Set<Node> MasterNodes) {
 		
-		long currentMarker = root.getMark() + 1;
-		ArrayDeque<Node> stack = new ArrayDeque<Node>();
-		stack.addFirst(root);
-		
-		while(!stack.isEmpty()) {
-			
-			Node beingChecked = stack.removeFirst();
-			
-			if(beingChecked.getMark() == currentMarker) continue;
-			else {
-				beingChecked.setMark(currentMarker);
-				beingChecked.setDistance(Double.MAX_VALUE);
-				beingChecked.setParent(null);
-				
-				for(Edge e : beingChecked.getEdges()) 
-					stack.addFirst(e.getDst());
-			}
+		for(Node n : MasterNodes) {
+			n.setParent(null);
+			n.setDistance(Double.MAX_VALUE);
 		}
+		
+//		ArrayDeque<Node> stack = new ArrayDeque<Node>();
+//		stack.addFirst(root);
+//		
+//		while(!stack.isEmpty()) {
+//			
+//			Node beingChecked = stack.removeFirst();
+//			
+//			if(beingChecked.getMark() == currentMarker) continue;
+//			else {
+//				beingChecked.setMark(currentMarker);
+//				beingChecked.setDistance(Double.MAX_VALUE);
+//				beingChecked.setParent(null);
+//				
+//				for(Edge e : beingChecked.getEdges()) 
+//					stack.addFirst(e.getDst());
+//			}
+//		}
 	}
 	
-	public static Node find(Node root, String nameOfNodeToFind) {
+	public static Node find(Set<Node> MasterNodes, String nameOfNodeToFind) {
 		
-		long currentMarker = root.getMark() + 1;
-		ArrayDeque<Node> stack = new ArrayDeque<Node>();
-		stack.addFirst(root);
-		
-		while(!stack.isEmpty()) {
-			
-			Node beingChecked = stack.removeFirst();
-			
-			if(beingChecked.getName().compareTo(nameOfNodeToFind) == 0) return beingChecked;
-			
-			if(beingChecked.getMark() == currentMarker) continue;
-			else 
-				for(Edge e : beingChecked.getEdges()) {
-					beingChecked.setMark(currentMarker);
-					stack.addFirst(e.getDst());
-				}
-		}
+		for(Node n : MasterNodes)
+			if(n.getName().compareTo(nameOfNodeToFind) == 0)
+				return n;
+//		long currentMarker = root.getMark() + 1;
+//		ArrayDeque<Node> stack = new ArrayDeque<Node>();
+//		stack.addFirst(root);
+//		
+//		while(!stack.isEmpty()) {
+//			
+//			Node beingChecked = stack.removeFirst();
+//			
+//			if(beingChecked.getName().compareTo(nameOfNodeToFind) == 0) return beingChecked;
+//			
+//			if(beingChecked.getMark() == currentMarker) continue;
+//			else 
+//				for(Edge e : beingChecked.getEdges()) {
+//					beingChecked.setMark(currentMarker);
+//					stack.addFirst(e.getDst());
+//				}
+//		}
 		return null;
 	}
 }

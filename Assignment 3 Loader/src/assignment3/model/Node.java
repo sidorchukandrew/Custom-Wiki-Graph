@@ -43,50 +43,58 @@ public class Node implements Serializable{
 		distance = Double.MAX_VALUE;
 	}
 	
-	public Node find(Node src, Node nodeToFind) {
+	public void addEdge(Node dst) {
 		
-		Graph.currentMarker++;
-		ArrayDeque<Node> stack = new ArrayDeque<Node>();
-		stack.addFirst(src);
-		
-		while(!stack.isEmpty()) {
-			
-			Node beingChecked = stack.removeFirst();
-			
-			if(beingChecked.getName().compareTo(nodeToFind.getName()) == 0) return beingChecked;
-			
-			if(beingChecked.mark == Graph.currentMarker) continue;
-			else 
-				for(Edge e : beingChecked.edges) {
-					beingChecked.mark = Graph.currentMarker;
-					stack.addFirst(e.getDst());
-				}
-		}
-		return null;
+		Cosine c = new Cosine(this, dst);
+		Edge e = new Edge(this, dst, c.compute());
+		edges.add(e);
+		graphContainingThisNode.addToMasterEdges(e);
 	}
-
-	public void add(Node src, Node dst, double cosine) {
-		
-		if(getName().compareTo(dst.getName()) == 0)
-			return;
-		
-		Node possibleFind = find(graphContainingThisNode.getRoot(), dst);
-		
-		Edge e;
-		
-		// If the node already exists in the graph, we will just update it's edges, otherwise, add it as a new node and set its parent
-		if(possibleFind != null) {
-			e = new Edge(src, possibleFind, cosine);
-			edges.add(e);
-		}
-		else {
-			e = new Edge(src, dst, cosine);
-			dst.setId(graphContainingThisNode.generateID());
-			edges.add(e);
-			graphContainingThisNode.MasterEdges.add(e);
-			dst.setParent(this);
-		}
-	}
+//	
+//	public Node find(Node src, Node nodeToFind) {
+//		
+//		Graph.currentMarker++;
+//		ArrayDeque<Node> stack = new ArrayDeque<Node>();
+//		stack.addFirst(src);
+//		
+//		while(!stack.isEmpty()) {
+//			
+//			Node beingChecked = stack.removeFirst();
+//			
+//			if(beingChecked.getName().compareTo(nodeToFind.getName()) == 0) return beingChecked;
+//			
+//			if(beingChecked.mark == Graph.currentMarker) continue;
+//			else 
+//				for(Edge e : beingChecked.edges) {
+//					beingChecked.mark = Graph.currentMarker;
+//					stack.addFirst(e.getDst());
+//				}
+//		}
+//		return null;
+//	}
+//
+//	public void add(Node src, Node dst, double cosine) {
+//		
+//		if(getName().compareTo(dst.getName()) == 0)
+//			return;
+//		
+//		Node possibleFind = find(graphContainingThisNode.getRoot(), dst);
+//		
+//		Edge e;
+//		
+//		// If the node already exists in the graph, we will just update it's edges, otherwise, add it as a new node and set its parent
+//		if(possibleFind != null) {
+//			e = new Edge(src, possibleFind, cosine);
+//			edges.add(e);
+//		}
+//		else {
+//			e = new Edge(src, dst, cosine);
+//			dst.setId(graphContainingThisNode.generateID());
+//			edges.add(e);
+//			graphContainingThisNode.MasterEdges.add(e);
+//			dst.setParent(this);
+//		}
+//	}
 	
 	public void printName() {
 		System.out.println(name);

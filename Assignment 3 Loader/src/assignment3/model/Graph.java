@@ -1,5 +1,6 @@
 package assignment3.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,36 +19,84 @@ public class Graph implements Serializable {
 	private static transient Hashtable <Integer, String> allWebsites;		// Makes sure a duplicate website isn't stored
 	private static transient final int MAX_LINKS_FROM_SITE = 30;
 	public static long currentMarker = 0;
-	public ArrayList<Edge> MasterEdges;
 	private int idGenerator = 0;
+	private int websiteNumber = 0;
 	
+	public ArrayList<Edge> MasterEdges;
+	private Set<Node> MasterNodes;
+
 	public Graph() {
 		
+		// Variables and Constants
 		MasterEdges = new ArrayList<Edge>();
-		allWebsites = new Hashtable <Integer, String>();
-	
+		MasterNodes = new HashSet<Node>();
+		allWebsites = new Hashtable <Integer, String> ();
 		String rootURL = IOUtilities.readRootURLFromFile();
-		System.out.println(rootURL);
-		addToAllSites(rootURL);
-		
 		root = new Node(rootURL, this);
-		root.setId(generateID());
+		updateUser();
 		
+		// Method
+		addToAllSites(rootURL);
+		root.setId(generateID());
+		root.setParent(null);
+		MasterNodes.add(root);
+		
+		// Add all the root's edges
 		for(String URL : root.getScrapeResult().getLinksToOtherSites()) {
 			Node dst = new Node(URL, this);
-			Cosine c = new Cosine(root, dst);
-			root.add(root, dst, c.compute());
 			
-			addToAllSites(URL);
+			if(!graphContains(dst)) {
+				dst.setParent(root);
+				dst.setId(generateID());
+				root.addEdge(dst);
+				MasterNodes.add(dst);
+			}
+			else 
+				root.addEdge(getByName(dst.getName()));
+			
+			updateUser();
 		}
 		
-		for(Edge edge : root.getEdges()) {
-			edge.setSrc(root);
-			breadthFirstPopulate(edge.getDst());
+		//- - - - - - - - - - - - - - -  Add edges to the root's edges
+		//
+		//       N4 -> *
+		//	   / 
+		//   R ->  N2 -> *
+		//     \
+		//       N3 -> *
+		//
+		// 								* Connecting to these
+		//- - - - - - - - - - - - - - - - - - - 
+		
+		for(Edge edge : root.getEdges()) 
+			populate(edge.getDst());
+		
+		// Add medoids
+		for(String URL : IOUtilities.readMedoids("C:\\Users\\Andrew Sidorchuk\\CSC365 Workspace\\Assignment 3 Application\\medoids.txt")) {
+			Node medoid = new Node(URL, this);
+			updateUser();
+			addToAllSites(URL);
+			
+			// Check if the medoid is already in the graph
+			if(!graphContains(medoid)) {
+				medoid.setId(generateID());
+				medoid.setParent(null);
+				MasterNodes.add(medoid);
+				
+				// Check if the graph contains any of the links from the medoid
+				for(String site : medoid.getScrapeResult().getLinksToOtherSites()) 
+					if(graphContains(site)) {
+						System.out.println("One of the medoid's links was : " + site + " and that site already exists in the graph.");
+						medoid.addEdge(getByName(site));
+					}
+			}
+			else
+				System.out.println("The graph already contains the medoid : " + medoid.getName());
 		}
 	}
 	
-	public void breadthFirstPopulate(Node src) {
+	
+	public void populate(Node src) {
 		
 		ScrapeResult srcScraped = src.getScrapeResult();
 		int numLinksStored = 0;
@@ -59,22 +108,31 @@ public class Graph implements Serializable {
 				break;
 			
 			Node dst = new Node(URL, this);
-			Cosine c = new Cosine(src, dst);
-			src.add(src, dst, c.compute());
 			
+			if(!graphContains(dst)) {
+				dst.setParent(src);
+				dst.setId(generateID());
+				src.addEdge(dst);
+				MasterNodes.add(dst);
+			}
+			else
+				src.addEdge(getByName(dst.getName()));
+			
+			updateUser();
 			addToAllSites(URL);
 			++numLinksStored;
 		}
 	}
 	
+	// VIEW IT AS AN UNDIRECTED GRAPH
+	// How can we tell if nodes are connected? By the MasterEdges list
+	// If there exists an edge in that list, union it
+	
 	public int numberOfDisjointSets() {
+		Integer [] ids = makeSet(MasterNodes);
 		
-		// Create the universe of ids
-		Map<Integer, Node> nodes = makeSet(MasterEdges);
-		Integer [] ids = makeSet(nodes);
-		
-		for(Node node : nodes.values())
-			ids[node.getID()] = find(node);
+		for(Edge e : MasterEdges)
+			ids = union(ids, e.getSrc().getID(), e.getDst().getID());
 		
 		Set<Integer> numberOfDisjointSets = new HashSet<Integer>();
 		
@@ -84,33 +142,39 @@ public class Graph implements Serializable {
 		return numberOfDisjointSets.size();
 	}
 	
-	private Map<Integer, Node> makeSet(ArrayList<Edge> edges) {
-		
-		Map <Integer, Node> nodes = new HashMap<Integer, Node>();
-		
-		for(Edge edge : edges) {
-			nodes.put(edge.getSrc().getID(), edge.getSrc());
-			nodes.put(edge.getDst().getID(), edge.getDst());
-		}
-		
-		return nodes;
-	}
-	
-	private Integer [] makeSet(Map<Integer, Node> nodes) {
-		Integer [] ids = new Integer[nodes.size()];
-		ids = nodes.keySet().toArray(ids);
+	private Integer [] makeSet(Set<Node> MasterNodes) {
+		Integer [] ids = new Integer[MasterNodes.size()];
+		for(Node n : MasterNodes)
+			ids[n.getID()] = n.getID();
 		
 		return ids;
 	}
 	
-	// Find the root's ID
-	private int find(Node node) {
-		
-		if(node.getParent() == null)
-			return node.getID();
-		else
-			return(find(node.getParent()));
+	private Integer [] union(Integer [] ids, int a, int b) {
+		 int x = find(ids, a);
+		 int y = find(ids, b);
+		 
+		 int temp = ids[x];
+		 ids[x] = y;
+		 
+		 for(int pos = 0; pos < ids.length; ++pos)
+			 if(ids[pos] == temp)
+				 ids[pos] = y;
+		 
+		 return ids;
 	}
+	
+	private int find(Integer [] ids, int k) {
+		
+		if(ids[k] == k) return k;
+		else 
+			return find(ids, ids[k]);
+	}
+	
+	public void addToMasterEdges(Edge e) {
+		MasterEdges.add(e);
+	}
+	
 	
 	public Node getRoot() {
 		return root;
@@ -124,8 +188,28 @@ public class Graph implements Serializable {
 		allWebsites.put(URL.hashCode(), URL);
 	}
 	
-	public static boolean graphContains(String URL) {
-		return allWebsites.containsKey(URL.hashCode());
+	public boolean graphContains(Node nodeToFind) {
+		for(Node node : MasterNodes)
+			if(node.getName().compareTo(nodeToFind.getName()) == 0)
+				return true;
+		
+		return false;
+	}
+	
+	public boolean graphContains(String nodeToFind) {
+		for(Node node : MasterNodes)
+			if(node.getName().compareTo(nodeToFind) == 0)
+				return true;
+		
+		return false;
+	}
+	
+	public Node getByName(String name) {
+		for(Node n : MasterNodes)
+			if(n.getName().compareTo(name) == 0)
+				return n;
+		
+		return null;
 	}
 	
 	public int generateID() { 
@@ -134,5 +218,13 @@ public class Graph implements Serializable {
 	
 	public ArrayList<Edge> getMasterEdges() {
 		return MasterEdges;
+	}
+	
+	public Set<Node> getMasterNodes() {
+		return MasterNodes;
+	}
+
+	public void updateUser() {
+		System.out.println(websiteNumber++);
 	}
 }

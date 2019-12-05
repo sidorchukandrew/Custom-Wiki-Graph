@@ -9,20 +9,20 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-//		System.out.println("Generating graph.");
-//		Graph graph = new Graph();
-//		
-//		System.out.println(graph.getMasterEdges().size());
-//		System.out.println("Graph created! Attempting to write to a serialized file...");
-//		
-//		try {
-//			IOUtilities.serializeGraph(graph);
-//			System.out.println("Serialization complete.");
-//		} catch(IOException e) {
-//			e.printStackTrace();
-//		}
+		System.out.println("Generating graph.");
+		Graph graph = new Graph();
 		
-		Graph graph = null;
+		System.out.println(graph.getMasterEdges().size());
+		System.out.println("Graph created! Attempting to write to a serialized file...");
+		
+		try {
+			IOUtilities.serializeGraph(graph);
+			System.out.println("Serialization complete.");
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+		graph = null;
 		System.out.println("Reading from file.");
 		try {
 			graph = IOUtilities.readActualGraph("serializedTEMP.txt");

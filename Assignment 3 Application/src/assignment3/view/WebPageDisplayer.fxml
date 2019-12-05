@@ -136,15 +136,5 @@
             </Label>
          </children>
       </GridPane>
-      <Button fx:id="substitute" layoutX="679.0" layoutY="769.0" mnemonicParsing="false" text="Substitute Medoids" textFill="WHITE">
-         <font>
-            <Font name="Segoe UI Bold" size="14.0" />
-         </font>
-      </Button>
-      <Button fx:id="revert" layoutX="679.0" layoutY="806.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="149.0" text="Revert" textFill="WHITE">
-         <font>
-            <Font name="Segoe UI Bold" size="14.0" />
-         </font>
-      </Button>
    </children>
 </AnchorPane>

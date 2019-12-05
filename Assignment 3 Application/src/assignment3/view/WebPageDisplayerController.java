@@ -43,8 +43,6 @@ public class WebPageDisplayerController
 	@FXML private CheckBox isMedoidThree;
 	@FXML private CheckBox isMedoidFour;
 	@FXML private CheckBox isMedoidFive;
-	@FXML private Button revert;
-	@FXML private Button substitute;
 	private LineChart pathChart;
 	private Label websiteLabelForHover;
 	private XYChart.Series series;
@@ -58,19 +56,22 @@ public class WebPageDisplayerController
 	public void initialize() {
 		
 		ArrayList<String> medoids = IOUtilities.readMedoids("C:\\Users\\Andrew Sidorchuk\\CSC365 Workspace\\Assignment 3 Application\\medoids.txt");
-		ArrayList<String> subMedoids = IOUtilities.readMedoids("C:\\Users\\Andrew Sidorchuk\\CSC365 Workspace\\Assignment 3 Application\\subMedoids.txt");
 		setMedoids(medoids);
-		revert.setDisable(true);
 		
-		ArrayList<String> websites = GraphUtilities.getAllWebsites(Main.getGraphRoot());
+		ArrayList<String> websites = GraphUtilities.getAllWebsites(Main.getGraph().getMasterNodes());
 		
-		for(Edge e : Main.getGraphRoot().getEdges()) {
+		for(Edge e : Main.getGraph().getRoot().getEdges()) {
 			websites.remove(e.getDst().getName());
 			websites.add(0, e.getDst().getName());
 		}
+		
+		for(String site : medoids) {
+			websites.remove(site);
+			websites.add(0, site);
+		}
 			
-		websites.remove(Main.getGraphRoot().getName());
-		websites.add(0, Main.getGraphRoot().getName());
+		websites.remove(Main.getGraph().getRoot().getName());
+		websites.add(0, Main.getGraph().getRoot().getName());
 		observableSitesOne = FXCollections.observableArrayList(websites);
 		sitesOne.setItems(observableSitesOne);		
 
@@ -84,7 +85,7 @@ public class WebPageDisplayerController
 				
 				series.getData().clear();
 				clearCheckBoxes();
-				Node src = GraphUtilities.find(Main.getGraphRoot(), sitesOne.getSelectionModel().getSelectedItem().toString());
+				Node src = GraphUtilities.find(Main.getGraph().getMasterNodes(), sitesOne.getSelectionModel().getSelectedItem().toString());
 				Stack<String> path = GraphUtilities.dijkstra(src, sitesTwo.getSelectionModel().getSelectedItem());
 				
 				int x = 1;
@@ -168,27 +169,6 @@ public class WebPageDisplayerController
         pane.getChildren().add(websiteLabelForHover);
         websiteLabelForHover.setLayoutX(825);
         pane.setTopAnchor(websiteLabelForHover, pathChart.getPrefHeight() + 40);
-        
-        substitute.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				setMedoids(subMedoids);
-				substitute.setDisable(true);
-				revert.setDisable(false);
-			}
-		});
-        
-        revert.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				setMedoids(medoids);
-				substitute.setDisable(false);
-				revert.setDisable(true);
-			}
-        	
-        });
 	}
 	
 	public void setMain(Main main) {
